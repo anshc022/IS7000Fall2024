@@ -15,6 +15,8 @@ import Batch from './pages/admin/batch/Batch';
 import Logs from "./pages/admin/Logs";
 import {setAuthToken} from "./pages/user/AuthToken";
 import { AuthProvider } from './contexts/AuthContext';
+import ForgotPassword from './pages/user/ForgotPassword';
+import Login from './pages/user/Login';
 
 function App() {
     //check jwt token
@@ -38,6 +40,8 @@ function App() {
           <Route path='/signup' element={<SignUp />} />
           <Route path="/batch" element={<Batch />} />
           <Route path="/log" element={<Logs />} />
+          <Route path='/forgot-password' element={<ForgotPassword />} />
+          <Route path='/login' element={<Login />} />
         </Routes>
         <Footer />
       </div>

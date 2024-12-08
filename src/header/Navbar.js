@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { RxHamburgerMenu } from "react-icons/rx";
 import { FaTimes } from 'react-icons/fa'
-import Login from '../pages/user/Login';
 import Logs from '../pages/admin/Logs'
 import SignUp from '../pages/user/signup';
 import { useAuth } from '../contexts/AuthContext';
@@ -11,19 +10,17 @@ import axios from 'axios';
 function Navbar() {
   const { isAuthenticated, isAdmin, dispatch, logout } = useAuth();
   const [nav, setNav] = useState(false);
-  const [token, setToken] = useState(null);
   const navigate = useNavigate();
 
   const handleClick = () => setNav(!nav);
 
   const handleLogout = () => {
     logout();
-    setToken(null);
     navigate('/');
   };
 
   const handleLoginClick = () => {
-    setToken(null); // This will trigger the Login component to show
+    navigate('/login');
   };
 
   return (
@@ -82,7 +79,6 @@ function Navbar() {
           )}
         </ul>
       </nav>
-      {token == null ? <Login setToken={setToken} /> : null}
     </>
   )
 }
