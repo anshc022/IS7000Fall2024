@@ -1,41 +1,51 @@
-
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import axios from 'axios';
-import { SERVERIP } from '../header/MarketConstants';
+import React, { createContext, useReducer, useContext } from 'react';
 
 const AuthContext = createContext(null);
 
-export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            fetchUserProfile(token);
-        } else {
-            setLoading(false);
-        }
-    }, []);
-
-    const fetchUserProfile = async (token) => {
-        try {
-            const response = await axios.get(`http://${SERVERIP}/api/account`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            setUser(response.data);
-        } catch (error) {
-            console.error('Failed to fetch user profile:', error);
-            localStorage.removeItem('token');
-        }
-        setLoading(false);
-    };
-
-    return (
-        <AuthContext.Provider value={{ user, setUser, loading }}>
-            {children}
-        </AuthContext.Provider>
-    );
+const authReducer = (state, action) => {
+  switch (action.type) {
+    case 'LOGIN':
+      return {
+        ...state,
+        user: action.payload,
+        isAuthenticated: true,
+        isAdmin: action.payload.authorities.includes('ROLE_ADMIN')
+      };
+    case 'LOGOUT':
+      return {
+        ...state,
+        user: null,
+        isAuthenticated: false,
+        isAdmin: false
+      };
+    default:
+      return state;
+  }
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const AuthProvider = ({ children }) => {
+  const [state, dispatch] = useReducer(authReducer, {
+    user: null,
+    isAuthenticated: false,
+    isAdmin: false
+  });
+
+  const logout = () => {
+    localStorage.removeItem('token');
+    dispatch({ type: 'LOGOUT' });
+  };
+
+  return (
+    <AuthContext.Provider value={{ ...state, dispatch, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
