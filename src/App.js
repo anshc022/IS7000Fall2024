@@ -14,6 +14,7 @@ import SignUp from './pages/user/signup';
 import Batch from './pages/admin/batch/Batch';
 import Logs from "./pages/admin/Logs";
 import {setAuthToken} from "./pages/user/AuthToken";
+import { AuthProvider } from './contexts/AuthContext';
 
 function App() {
     //check jwt token
@@ -22,24 +23,25 @@ function App() {
         setAuthToken(token);
     }
   return (
-    <div className="App bg-rose-400	  w-full h-screen" >
-      <Navbar />
-      <Routes>
-        <Route path='/' element={<Home />} />
-        <Route path='/markets' element={<MarketOverview />} />
-        <Route path='/subscription' element={<Subscription />} />
-        <Route path='/Subscriptionadminhome' element={<Subscriptionadminhome />} />
-        <Route path='/wallet' element={<Wallet />} />
-        <Route path='/user' element={<User />} />
-        <Route path='/profile' element={<Profile />} />
-        <Route path='/contact' element={<Contact />} />
-        <Route path='/signup' element={<SignUp />} />
-        <Route path="/batch" element={<Batch />} />
+    <AuthProvider>
+      <div className="App bg-rose-400	  w-full h-screen" >
+        <Navbar />
+        <Routes>
+          <Route path='/' element={<Home />} />
+          <Route path='/markets' element={<MarketOverview />} />
+          <Route path='/subscription' element={<Subscription />} />
+          <Route path='/Subscriptionadminhome' element={<Subscriptionadminhome />} />
+          <Route path='/wallet' element={<Wallet />} />
+          <Route path='/user' element={<User />} />
+          <Route path='/profile' element={<Profile />} />
+          <Route path='/contact' element={<Contact />} />
+          <Route path='/signup' element={<SignUp />} />
+          <Route path="/batch" element={<Batch />} />
           <Route path="/log" element={<Logs />} />
-
-      </Routes>
-      <Footer />
-    </div>
+        </Routes>
+        <Footer />
+      </div>
+    </AuthProvider>
   );
 }
 
