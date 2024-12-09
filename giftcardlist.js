@@ -13,7 +13,6 @@ function GiftCardList({ onViewGiftCard }) {
         if (!token) {
           throw new Error('No token found');
         }
-
         const response = await axios.get('http://3.218.8.102/api/giftcards?page=0&size=20&sort=id,asc&cacheBuster=1732246285725', {
           headers: {
             'Authorization': Bearer ${token},
