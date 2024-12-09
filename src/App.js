@@ -10,7 +10,7 @@ import User from './pages/user/User';
 import Profile from './pages/profile/Profile';
 import Footer from './header/Footer';
 import Subscriptionadminhome from './pages/admin/batch/Subscriptionadminhome';
-import SignUp from './pages/user/signup';
+import SignUp from './pages/user/SignUp';
 import Batch from './pages/admin/batch/Batch';
 import Logs from "./pages/admin/Logs";
 import {setAuthToken} from "./pages/user/AuthToken";

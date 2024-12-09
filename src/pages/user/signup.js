@@ -1,122 +1,137 @@
 import React, { useState } from 'react';
+import axios from 'axios';
+import { Link, useNavigate } from 'react-router-dom';
 
 const SignUp = () => {
   const [formData, setFormData] = useState({
-    name: '',
+    login: '',
     email: '',
     password: '',
-    confirmPassword: '',
+    confirmPassword: ''
   });
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Add form submission logic here
-    console.log('Form Submitted:', formData);
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    try {
+      console.log('Sending registration data:', {
+        login: formData.login,
+        email: formData.email,
+        password: formData.password,
+        langKey: 'en'
+      });
+
+      const response = await axios({
+        method: 'POST',
+        url: 'http://3.218.8.102/api/register',
+        data: {
+          login: formData.login,
+          email: formData.email,
+          password: formData.password,
+          langKey: 'en'
+        },
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': '*/*'
+        }
+      });
+
+      console.log('Registration response:', response);
+      setSuccess('Registration successful! Please login.');
+      setTimeout(() => navigate('/login'), 2000);
+    } catch (err) {
+      console.error('Registration error:', err.response?.data || err.message);
+      if (err.response?.status === 401) {
+        setError('Authorization required. Please check with administrator.');
+      } else if (err.response?.data?.detail) {
+        setError(err.response.data.detail);
+      } else {
+        setError('Registration failed. Please try again.');
+      }
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
-          Sign Up
-        </h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Name Field */}
-          <div>
-            <label htmlFor="name" className="block text-gray-700 font-medium mb-1">
-              Full Name
-            </label>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+      <div className="bg-white p-8 rounded-lg shadow-md w-96">
+        <h2 className="text-2xl font-bold mb-6">Create Account</h2>
+        {error && <p className="text-red-600 mb-4">{error}</p>}
+        {success && <p className="text-green-600 mb-4">{success}</p>}
+        
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label className="block text-gray-700 mb-2">Username</label>
             <input
               type="text"
-              name="name"
-              id="name"
-              value={formData.name}
+              name="login"
+              className="w-full p-2 border rounded"
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-              placeholder="Enter your full name"
             />
           </div>
 
-          {/* Email Field */}
-          <div>
-            <label htmlFor="email" className="block text-gray-700 font-medium mb-1">
-              Email Address
-            </label>
+          <div className="mb-4">
+            <label className="block text-gray-700 mb-2">Email</label>
             <input
               type="email"
               name="email"
-              id="email"
-              value={formData.email}
+              className="w-full p-2 border rounded"
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-              placeholder="Enter your email"
             />
           </div>
 
-          {/* Password Field */}
-          <div>
-            <label htmlFor="password" className="block text-gray-700 font-medium mb-1">
-              Password
-            </label>
+          <div className="mb-4">
+            <label className="block text-gray-700 mb-2">Password</label>
             <input
               type="password"
               name="password"
-              id="password"
-              value={formData.password}
+              className="w-full p-2 border rounded"
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-              placeholder="Create a password"
             />
           </div>
 
-          {/* Confirm Password Field */}
-          <div>
-            <label
-              htmlFor="confirmPassword"
-              className="block text-gray-700 font-medium mb-1"
-            >
-              Confirm Password
-            </label>
+          <div className="mb-6">
+            <label className="block text-gray-700 mb-2">Confirm Password</label>
             <input
               type="password"
               name="confirmPassword"
-              id="confirmPassword"
-              value={formData.confirmPassword}
+              className="w-full p-2 border rounded"
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring focus:ring-blue-300"
-              placeholder="Confirm your password"
             />
           </div>
 
-          {/* Submit Button */}
-          <div>
-            <button
-              type="submit"
-              className="w-full bg-blue-600 text-white font-medium py-2 rounded-lg hover:bg-blue-700 transition duration-300"
-            >
-              Sign Up
-            </button>
-          </div>
+          <button
+            type="submit"
+            className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+          >
+            Sign Up
+          </button>
         </form>
 
-        {/* Login Redirect */}
-        <p className="text-center text-gray-600 mt-4">
-          Already have an account?{' '}
-          <a
-            href="/Login"
-            className="text-blue-600 hover:underline"
-          >
-            Log in here
-          </a>
-        </p>
+        <div className="mt-4 text-center">
+          <p>Already have an account? {' '}
+            <Link to="/login" className="text-blue-500 hover:text-blue-700">
+              Login
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );
